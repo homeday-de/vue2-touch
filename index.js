@@ -1,5 +1,5 @@
 import touches from './directive'
-const vue2Touch = {
+var vue2Touch = {
   install: function(Vue, options) {
     touches.config(options)
     Vue.directive('touch', touches)

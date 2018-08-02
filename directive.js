@@ -16,7 +16,7 @@ var evt = null
 var handler = null
 var evtType = ''
 
-const touchs = {
+var touches = {
   config: function (config) {
     if (config == null) return;
     if (config.gestures && (config.gestures instanceof Array)) gestures = config.gestures
@@ -65,4 +65,4 @@ const touchs = {
     evt = null
   }
 }
-export default touchs
+export default touches
