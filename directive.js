@@ -12,9 +12,9 @@ var directions = {
 function capitalize (str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
-var evt = null
-var handler = null
-var evtType = ''
+
+var count = 0
+var instances = {}
 
 var touches = {
   config: function (config) {
@@ -27,9 +27,14 @@ var touches = {
     }
   },
   bind: function(el, binding) {
-    if (!evt) {
-      evt = new Hammer.Manager(el)
-    }
+    var handler = null
+    var evtType = ''
+
+    var instance = new Hammer.Manager(el)
+    count++
+    el.setAttribute('touchElmId', count)
+    instances[count] = instance
+
     var type = evtType = binding.arg.toLowerCase()
     var index = gestures.indexOf(type)
     if (index < 0) {
@@ -41,12 +46,12 @@ var touches = {
       console.warn('[vue2-touch] invalid args value for v-touch, please check it')
       return
     }
-    evt.add(new Hammer[capitalize(type)]())
+    instance.add(new Hammer[capitalize(type)]())
     // bind function
     var evtsArray = directions[evtType]
     if (handler) {
       evtsArray.forEach(function(et) {
-        evt.off(et, function(e) {
+        instance.off(et, function(e) {
           handler(et, e)
         })
       })
@@ -54,15 +59,19 @@ var touches = {
     if (typeof binding.value === 'function') {
       handler = binding.value
       evtsArray.forEach(function(et) {
-        evt.on(et, function(e) {
+        instance.on(et, function(e) {
           handler(et, e)
         })
       })
     }
   },
-  unbind: function() {
-    evt.destroy()
-    evt = null
+  unbind: function(el) {
+    var id = el.getAttribute('touchElmId')
+    var instance = instances[id]
+    if(instance) {
+      instance.destroy()
+      delete instances[id]
+    }
   }
 }
 export default touches
